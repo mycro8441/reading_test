@@ -1,0 +1,53 @@
+{
+    "common": {
+      "loading": "로딩 중...",
+      "start": "시작하기",
+      "cancel": "취소",
+      "confirm": "확인",
+      "back": "뒤로",
+      "next": "다음",
+      "previous": "이전",
+      "save": "저장",
+      "delete": "삭제",
+      "edit": "수정",
+      "search": "검색",
+      "filter": "필터",
+      "settings": "설정"
+    },
+    "home": {
+      "title": "글로벌 시험 준비",
+      "subtitle": "AI 기반 학습 플랫폼",
+      "selectCountry": "국가를 선택하세요",
+      "selectExam": "시험을 선택하세요",
+      "popularExams": "인기 시험",
+      "allExams": "모든 시험"
+    },
+    "country": {
+      "korea": "대한민국",
+      "china": "중국",
+      "japan": "일본",
+      "international": "국제 시험"
+    },
+    "exam": {
+      "users": "명의 학습자",
+      "problems": "개의 문제",
+      "features": "기능",
+      "subjects": "과목",
+      "difficulty": "난이도",
+      "time": "시간"
+    },
+    "feature": {
+      "aiPractice": "AI 문제 생성",
+      "pastExams": "기출문제",
+      "vocabulary": "어휘 학습",
+      "morpheme": "형태소 분석",
+      "analysis": "분석 도구"
+    },
+    "stats": {
+      "totalScore": "총점",
+      "accuracy": "정답률",
+      "studyTime": "학습 시간",
+      "problemsSolved": "푼 문제 수",
+      "streak": "연속 학습"
+    }
+  }
