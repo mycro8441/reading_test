@@ -1,5 +1,5 @@
 import { SAMPLE_SESSION } from '@/constants/sampleData';
-import { generateText } from '@/services/AIGenerationService';
+import { AIGenerationService } from '@/services/AIGenerationService';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -53,14 +53,9 @@ export default function LearningScreen() {
       console.log('🎯 Generating problems with params:', generationParams);
 
       // Google AI로 문제 생성
-      const rawData = await generateText(generationParams);
+      const rawData =new AIGenerationService().generateProblems(generationParams);
       
-      console.log('📥 Raw data received:', {
-        hasPassage: !!rawData.passage,
-        paragraphCount: rawData.passage?.paragraphs?.length,
-        problemCount: rawData.problems?.length
-      });
-      
+
       // 데이터 변환
       const generatedSession = transformToLearningSession(rawData, generationParams);
       

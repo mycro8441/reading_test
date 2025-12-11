@@ -17,7 +17,7 @@ const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { theme, themeId, setTheme } = useTheme();
+  const { theme } = useTheme();
 
   const styles = createStyles(theme);
 
@@ -53,8 +53,7 @@ export default function HomeScreen() {
       description: '문장 구조 분석',
       icon: '🔍',
       color: '#43e97b',
-      route: '/korea/morpheme',
-      badge: '준비중',
+      route: '/morpheme',
     },
   ];
 

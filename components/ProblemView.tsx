@@ -28,21 +28,27 @@ export const ProblemView: React.FC<ProblemViewProps> = ({
         </Text>
       </View>
       <View style={styles.premiseContent}>
-        {premise.items ? (  
-          premise.items.map((item, index) => (
-            <View key={index} style={styles.premiseItem}>
-              <Text style={styles.premiseItemMarker}>
-                {String.fromCharCode(0x3131 + index)}.
-              </Text>
-              <Text style={styles.premiseItemText}>{item}</Text>
-            </View>
-          ))
-        ) : (
+        {/* 텍스트가 있으면 먼저 표시 */}
+        {premise.text && premise.segments.length > 0 && (
           <SegmentRenderer
             segments={premise.segments}
             baseStyle={styles.premiseText}
             theme={theme}
           />
+        )}
+        
+        {/* items가 있으면 그 다음에 표시 */}
+        {premise.items && premise.items.length > 0 && (
+          <>
+            {premise.items.map((item, index) => (
+              <View key={index} style={styles.premiseItem}>
+                <Text style={styles.premiseItemMarker}>
+                  {String.fromCharCode(0x3131 + index)}.
+                </Text>
+                <Text style={styles.premiseItemText}>{item}</Text>
+              </View>
+            ))}
+          </>
         )}
       </View>
     </View>

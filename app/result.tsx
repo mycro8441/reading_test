@@ -11,6 +11,10 @@ import {
   View,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
+const getAnswerSymbol = (index: number): string => {
+  const symbols = ['①', '②', '③', '④', '⑤'];
+  return symbols[index] || String(index + 1);
+};
 
 export default function ResultScreen() {
   const router = useRouter();
@@ -26,6 +30,7 @@ export default function ResultScreen() {
   const correctCount = problemsData.reduce((count: number, problem: any) => {
     return count + (selectedAnswers[problem.id] === problem.answer ? 1 : 0);
   }, 0);
+
   const score = Math.round((correctCount / problemsData.length) * 100);
 
   useEffect(() => {
@@ -152,7 +157,8 @@ export default function ResultScreen() {
                           styles.reviewCardText,
                           !isCorrect && { color: theme.colors.error },
                         ]}>
-                          ⑤ {problem.options[userAnswer].text}
+                          
+                          {getAnswerSymbol(selectedAnswers[problem.id])} {problem.options[userAnswer].text}
                         </Text>
                       ) : (
                         <Text style={[styles.reviewCardText, { color: theme.colors.textTertiary }]}>
@@ -169,7 +175,7 @@ export default function ResultScreen() {
                             styles.reviewCardText,
                             { color: theme.colors.success },
                           ]}>
-                            ⑤ {problem.options[problem.answer].text}
+                           {getAnswerSymbol(problem.answer)} {problem.options[problem.answer].text}
                           </Text>
                         ) : (
                           <Text style={styles.reviewCardText}>정답 정보 없음</Text>
