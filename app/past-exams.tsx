@@ -1,3 +1,4 @@
+import { UnifiedHeader } from '@/components/UnifiedHeader';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -63,22 +64,11 @@ export default function PastExamsScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={theme.statusBar} />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>기출문제</Text>
-          <Text style={styles.headerSubtitle}>역대 수능 문제 풀이</Text>
-        </View>
-        <View style={styles.headerSpacer} />
-      </View>
-
+        <UnifiedHeader
+              title='기출문제'
+              subtitle='역대 수능 문제 풀이'
+              showBack 
+              theme={theme}        />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}

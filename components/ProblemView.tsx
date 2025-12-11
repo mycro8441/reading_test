@@ -28,7 +28,7 @@ export const ProblemView: React.FC<ProblemViewProps> = ({
         </Text>
       </View>
       <View style={styles.premiseContent}>
-        {premise.items ? (
+        {premise.items ? (  
           premise.items.map((item, index) => (
             <View key={index} style={styles.premiseItem}>
               <Text style={styles.premiseItemMarker}>

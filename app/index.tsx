@@ -2,7 +2,6 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import {
   Dimensions,
-  Platform,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -11,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { UnifiedHeader } from '../components/UnifiedHeader';
 import { useTheme } from '../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
@@ -62,20 +62,12 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={theme.statusBar} />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>수능 국어</Text>
-          <Text style={styles.headerSubtitle}>AI 기반 학습 플랫폼</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.settingsButton}
-          onPress={() => router.push('/settings' as any)}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.settingsIcon}>⚙️</Text>
-        </TouchableOpacity>
-      </View>
+      <UnifiedHeader
+        title="수능 국어"
+        subtitle="AI 기반 학습 플랫폼"
+        showSettings={true}
+        theme={theme}
+      />
 
       <ScrollView
         style={styles.scrollView}
@@ -163,40 +155,6 @@ const createStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: Platform.OS === 'ios' ? 16 : 32,
-    paddingBottom: 24,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    fontFamily: theme.fonts?.heading,
-    color: theme.colors.text,
-    letterSpacing: -0.5,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    fontFamily: theme.fonts?.title,
-    color: theme.colors.textSecondary,
-    marginTop: 2,
-    fontWeight: '500',
-  },
-  settingsButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: theme.colors.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...theme.shadows.small,
-  },
-  settingsIcon: {
-    fontSize: 20,
   },
   scrollView: {
     flex: 1,
@@ -340,4 +298,4 @@ const createStyles = (theme: any) => StyleSheet.create({
   spacer: {
     height: 20,
   },
-});
+}); 

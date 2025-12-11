@@ -1,16 +1,16 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
+import { UnifiedHeader } from '../components/UnifiedHeader';
 import { useTheme } from '../contexts/ThemeContext';
 
 const TOPICS = [
@@ -35,7 +35,7 @@ const PROBLEM_COUNTS = [
 
 export default function TopicSelectionScreen() {
   const router = useRouter();
-  const { theme, themeId, setTheme } = useTheme();
+  const { theme } = useTheme();
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [problemCount, setProblemCount] = useState(5);
@@ -68,13 +68,12 @@ export default function TopicSelectionScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={theme.statusBar} />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>국어 영역</Text>
-          <Text style={styles.headerSubtitle}>AI 맞춤 학습</Text>
-        </View>
-      </View>
+      <UnifiedHeader
+        title="국어 영역"
+        subtitle="AI 맞춤 학습"
+        theme={theme}
+        showBack
+      />
 
       <ScrollView
         style={styles.scrollView}
@@ -208,40 +207,6 @@ const createStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: Platform.OS === 'ios' ? 16 : 32,
-    paddingBottom: 24,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    fontFamily: theme.fonts?.heading,
-    color: theme.colors.text,
-    letterSpacing: -0.5,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    fontFamily: theme.fonts?.title,
-    color: theme.colors.textSecondary,
-    marginTop: 2,
-    fontWeight: '500',
-  },
-  settingsButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: theme.colors.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...theme.shadows.small,
-  },
-  settingsIcon: {
-    fontSize: 20,
   },
   scrollView: {
     flex: 1,
@@ -395,7 +360,7 @@ const createStyles = (theme: any) => StyleSheet.create({
   footer: {
     paddingHorizontal: 24,
     paddingTop: 16,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 24,
+    paddingBottom: 20,
     backgroundColor: theme.colors.background,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
@@ -434,59 +399,5 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.textTertiary,
     marginTop: 12,
     fontWeight: '500',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  modalContent: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 24,
-    padding: 28,
-    width: '100%',
-    maxWidth: 340,
-    ...theme.shadows.large,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    fontFamily: theme.fonts?.heading,
-    color: theme.colors.text,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  themeOption: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginBottom: 8,
-    backgroundColor: theme.colors.background,
-  },
-  themeOptionSelected: {
-    backgroundColor: theme.colors.surfaceSecondary,
-  },
-  themeOptionText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.text,
-  },
-  themeCheck: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: theme.colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  themeCheckText: {
-    color: theme.colors.background,
-    fontSize: 12,
-    fontWeight: '700',
   },
 });

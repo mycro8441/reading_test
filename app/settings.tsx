@@ -1,19 +1,17 @@
-import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+import { UnifiedHeader } from '../components/UnifiedHeader';
 import { useTheme } from '../contexts/ThemeContext';
 
 export default function SettingsScreen() {
-  const router = useRouter();
   const { theme, themeId, setTheme } = useTheme();
   const [selectedLanguage, setSelectedLanguage] = useState('ko');
 
@@ -37,18 +35,11 @@ export default function SettingsScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={theme.statusBar} />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>설정</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <UnifiedHeader
+        title="설정"
+        showBack={true}
+        theme={theme}
+      />
 
       <ScrollView
         style={styles.scrollView}
@@ -202,37 +193,6 @@ const createStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: Platform.OS === 'ios' ? 8 : 16,
-    paddingBottom: 20,
-  },
-  backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: theme.colors.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...theme.shadows.small,
-  },
-  backIcon: {
-    fontSize: 24,
-    color: theme.colors.text,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    fontFamily: theme.fonts?.heading,
-    color: theme.colors.text,
-    letterSpacing: -0.3,
-  },
-  headerSpacer: {
-    width: 44,
   },
   scrollView: {
     flex: 1,

@@ -1,14 +1,14 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Animated,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -20,13 +20,13 @@ export default function ResultScreen() {
   const scoreAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const problems = JSON.parse(params.problemsData as string);
+  const problemsData = JSON.parse(params.problemsData as string);
   const selectedAnswers = JSON.parse(params.selectedAnswersData as string);
 
-  const correctCount = problems.reduce((count: number, problem: any) => {
+  const correctCount = problemsData.reduce((count: number, problem: any) => {
     return count + (selectedAnswers[problem.id] === problem.answer ? 1 : 0);
   }, 0);
-  const score = Math.round((correctCount / problems.length) * 100);
+  const score = Math.round((correctCount / problemsData.length) * 100);
 
   useEffect(() => {
     Animated.parallel([
@@ -99,7 +99,7 @@ export default function ResultScreen() {
             <View style={styles.scoreDivider} />
             <View style={styles.scoreDetail}>
               <Text style={[styles.scoreDetailValue, { color: theme.colors.error }]}>
-                {problems.length - correctCount}
+                {problemsData.length - correctCount}
               </Text>
               <Text style={styles.scoreDetailLabel}>오답</Text>
             </View>
@@ -110,7 +110,7 @@ export default function ResultScreen() {
         <View style={styles.reviewSection}>
           <Text style={styles.reviewTitle}>문제 해설</Text>
 
-          {problems.map((problem: any, index: number) => {
+          {problemsData.map((problem: any, index: number) => {
             const userAnswer = selectedAnswers[problem.id];
             const isCorrect = userAnswer === problem.answer;
             const isExpanded = expandedProblems[problem.id];
@@ -142,37 +142,53 @@ export default function ResultScreen() {
                   <View style={styles.reviewCardContent}>
                     <View style={styles.reviewCardSection}>
                       <Text style={styles.reviewCardSectionLabel}>문제</Text>
-                      <Text style={styles.reviewCardText}>{problem.question}</Text>
+                      <Text style={styles.reviewCardText}>{problem.questionText}</Text>
                     </View>
 
                     <View style={styles.reviewCardSection}>
                       <Text style={styles.reviewCardSectionLabel}>내 답안</Text>
-                      <Text style={[
-                        styles.reviewCardText,
-                        !isCorrect && { color: theme.colors.error },
-                      ]}>
-                        {problem.options[userAnswer]}
-                      </Text>
+                      {userAnswer !== undefined && problem.options[userAnswer] ? (
+                        <Text style={[
+                          styles.reviewCardText,
+                          !isCorrect && { color: theme.colors.error },
+                        ]}>
+                          ⑤ {problem.options[userAnswer].text}
+                        </Text>
+                      ) : (
+                        <Text style={[styles.reviewCardText, { color: theme.colors.textTertiary }]}>
+                          선택하지 않음
+                        </Text>
+                      )}
                     </View>
 
                     {!isCorrect && (
                       <View style={styles.reviewCardSection}>
                         <Text style={styles.reviewCardSectionLabel}>정답</Text>
-                        <Text style={[
-                          styles.reviewCardText,
-                          { color: theme.colors.success },
-                        ]}>
-                          {problem.options[problem.answer]}
-                        </Text>
+                        {problem.options[problem.answer] ? (
+                          <Text style={[
+                            styles.reviewCardText,
+                            { color: theme.colors.success },
+                          ]}>
+                            ⑤ {problem.options[problem.answer].text}
+                          </Text>
+                        ) : (
+                          <Text style={styles.reviewCardText}>정답 정보 없음</Text>
+                        )}
                       </View>
                     )}
 
                     <View style={[styles.reviewCardSection, styles.explanationSection]}>
                       <Text style={styles.reviewCardSectionLabel}>해설</Text>
-                      <Text style={styles.reviewCardText}>
-                        이 문제는 {problem.type} 유형으로, 지문의 핵심 내용을 파악하고 
-                        논리적으로 추론하는 능력을 평가합니다.
-                      </Text>
+                      {problem.options[problem.answer]?.explanation ? (
+                        <Text style={styles.reviewCardText}>
+                          {problem.options[problem.answer].explanation}
+                        </Text>
+                      ) : (
+                        <Text style={styles.reviewCardText}>
+                          이 문제는 {problem.category} 유형으로, 지문의 핵심 내용을 파악하고 
+                          논리적으로 추론하는 능력을 평가합니다.
+                        </Text>
+                      )}
                     </View>
                   </View>
                 )}
@@ -229,7 +245,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.text,
     letterSpacing: -4,
     marginBottom: 16,
-    fontFamily: theme.fonts?.number || 'System',  // HY견명조 (숫자)
+    fontFamily: theme.fonts?.number || 'System',
   },
   scoreMessage: {
     fontSize: 20,
@@ -300,7 +316,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     fontSize: 20,
     fontWeight: '500',
     color: theme.colors.text,
-    fontFamily: theme.fonts?.number || 'System',  // HY견명조 (문항 번호)
+    fontFamily: theme.fonts?.number || 'System',
   },
   reviewCardBadge: {
     paddingVertical: 6,
@@ -347,7 +363,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     lineHeight: 24,
     color: theme.colors.text,
     fontWeight: '400',
-    fontFamily: theme.fonts?.body || 'System',  // A중명조 (본문)
+    fontFamily: theme.fonts?.body || 'System',
   },
   explanationSection: {
     backgroundColor: theme.colors.badge,

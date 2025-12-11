@@ -1,4 +1,5 @@
 import { SAMPLE_SESSION } from '@/constants/sampleData';
+import { generateText } from '@/services/AIGenerationService';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -15,7 +16,7 @@ import {
 import { PassageView } from '../components/PassageView';
 import { ProblemView } from '../components/ProblemView';
 import { useTheme } from '../contexts/ThemeContext';
-import { LearningSession } from '../types/problem';
+import { LearningSession, parseStyledText } from '../types/problem';
 
 export default function LearningScreen() {
   const router = useRouter();
@@ -33,15 +34,12 @@ export default function LearningScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
-  // AI 생성 서비스 초기화
-  //const aiService = new AIGenerationService();
-
   // 컴포넌트 마운트 시 문제 생성
   useEffect(() => {
-    generateProblems();
+    generateProblemsAsync();
   }, []);
 
-  const generateProblems = async () => {
+  const generateProblemsAsync = async () => {
     setLoading(true);
     setError(null);
 
@@ -52,15 +50,109 @@ export default function LearningScreen() {
         problemCount: parseInt(params.problemCount as string) || 5,
       };
 
-      //const generatedSession = await aiService.generateProblems(generationParams);
-      const generatedSession = SAMPLE_SESSION;
+      console.log('🎯 Generating problems with params:', generationParams);
+
+      // Google AI로 문제 생성
+      const rawData = await generateText(generationParams);
+      
+      console.log('📥 Raw data received:', {
+        hasPassage: !!rawData.passage,
+        paragraphCount: rawData.passage?.paragraphs?.length,
+        problemCount: rawData.problems?.length
+      });
+      
+      // 데이터 변환
+      const generatedSession = transformToLearningSession(rawData, generationParams);
+      
+      console.log('✅ Session transformed:', {
+        hasPassage: !!generatedSession.passage,
+        paragraphCount: generatedSession.passage?.paragraphs?.length,
+        firstParagraphHasSegments: !!generatedSession.passage?.paragraphs?.[0]?.segments
+      });
+      
       setSession(generatedSession);
     } catch (err) {
-      console.error('Generation failed:', err);
-      setError('문제 생성에 실패했습니다. 다시 시도해주세요.');
+      console.error('❌ Generation failed:', err);
+      setError('문제 생성에 실패했습니다. 샘플 데이터를 사용합니다.');
+      
+      // 개발 중에는 샘플 데이터 사용
+      console.log('📦 Using sample data instead');
+      setSession(SAMPLE_SESSION);
     } finally {
       setLoading(false);
     }
+  };
+
+  const transformToLearningSession = (rawData: any, params: any): LearningSession => {
+    console.log('🔄 Starting transformation...');
+    
+    // 지문 변환
+    const transformedPassage = {
+      title: rawData.passage.title,
+      author: rawData.passage.author,
+      source: rawData.passage.source,
+      paragraphs: rawData.passage.paragraphs.map((p: any, idx: number) => {
+        console.log(`  📝 Paragraph ${idx + 1}:`, {
+          textLength: p.text?.length,
+          styleRangesCount: p.styleRanges?.length,
+          annotation: p.annotation
+        });
+
+        // ⚠️ 중요: segments 생성!
+        const segments = parseStyledText(p.text, p.styleRanges || []);
+        
+        console.log(`    ✨ Generated ${segments.length} segments`);
+
+        return {
+          id: Math.random().toString(36).substr(2, 9),
+          text: p.text,
+          segments: segments,  // ← 이게 핵심!
+          annotation: p.annotation,
+          indent: p.indent || 0,
+        };
+      }),
+      footnotes: rawData.passage.footnotes,
+    };
+
+    // 문제 변환
+    const transformedProblems = rawData.problems.map((p: any, idx: number) => {
+      console.log(`  ❓ Problem ${idx + 1}:`, {
+        type: p.type,
+        optionsCount: p.options?.length
+      });
+
+      return {
+        id: p.id,
+        type: p.type,
+        category: p.category,
+        questionText: p.questionText,
+        questionSegments: parseStyledText(p.questionText, p.questionStyleRanges || []),
+        premise: p.premise ? {
+          title: p.premise.title,
+          text: p.premise.text || '',
+          segments: p.premise.text ? parseStyledText(p.premise.text, p.premise.styleRanges || []) : [],
+          items: p.premise.items,
+        } : undefined,
+        options: p.options.map((o: any, optIdx: number) => ({
+          id: optIdx,
+          text: o.text,
+          segments: parseStyledText(o.text, o.styleRanges || []),
+          explanation: o.explanation,
+        })),
+        answer: p.answer,
+        difficulty: p.difficulty,
+        points: p.points,
+        timeEstimate: p.timeEstimate,
+      };
+    });
+
+    return {
+      topic: params.topic,
+      difficulty: params.difficulty,
+      problemCount: params.problemCount,
+      passage: transformedPassage,
+      problems: transformedProblems,
+    };
   };
 
   const handleSelectAnswer = (optionIndex: number) => {
@@ -97,7 +189,7 @@ export default function LearningScreen() {
       router.push({
         pathname: '/result',
         params: {
-          sessionData: JSON.stringify(session),
+          problemsData: JSON.stringify(session.problems),
           selectedAnswersData: JSON.stringify(selectedAnswers),
         },
       });
@@ -148,7 +240,7 @@ export default function LearningScreen() {
         <View style={styles.errorContainer}>
           <Text style={styles.errorIcon}>⚠️</Text>
           <Text style={styles.errorText}>{error || '문제를 불러올 수 없습니다'}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={generateProblems}>
+          <TouchableOpacity style={styles.retryButton} onPress={generateProblemsAsync}>
             <Text style={styles.retryButtonText}>다시 시도</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.backButton} onPress={() => router.push('/')}>

@@ -13,8 +13,12 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
   baseStyle,
   theme,
 }) => {
+  // segments가 없으면 빈 텍스트 반환
+  if (!segments || segments.length === 0) {
+    console.warn('SegmentRenderer: segments가 비어있습니다');
+    return <Text style={baseStyle}>(텍스트 없음)</Text>;
+  }
 
-    if(!segments) return;
   const renderSegment = (segment: TextSegment, index: number) => {
     const textStyles: RNTextStyle[] = [baseStyle || {}];
     const containerStyles: any[] = [];
@@ -27,9 +31,8 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
     
     if (segment.underline) {
       textStyles.push({
-        borderBottomWidth: 1,
-        borderBottomColor: theme.colors.text,
-        paddingBottom: 2, // 이 값으로 간격 조정
+        textDecorationLine: 'underline',
+        textDecorationStyle: 'solid',
       });
     }
 
@@ -58,14 +61,14 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
     }
 
     const textElement = (
-      <Text key={index} style={textStyles}>
+      <Text key={`text-${index}`} style={textStyles}>
         {segment.text}
       </Text>
     );
 
     if (needsContainer) {
       return (
-        <View key={index} style={[{ flexDirection: 'row', alignItems: 'center' }, ...containerStyles]}>
+        <View key={`container-${index}`} style={[{ flexDirection: 'row', alignItems: 'center' }, ...containerStyles]}>
           {textElement}
         </View>
       );
@@ -98,6 +101,18 @@ export const ParagraphRenderer: React.FC<ParagraphRendererProps> = ({
 }) => {
   const styles = createParagraphStyles(theme);
 
+  // segments 검증
+  if (!segments || segments.length === 0) {
+    console.error('ParagraphRenderer: segments가 없습니다');
+    return (
+      <View style={styles.paragraphContainer}>
+        <Text style={[baseStyle, { color: 'red' }]}>
+          ⚠️ 문단 오류: segments 없음
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.paragraphContainer}>
       {annotation && (
@@ -115,7 +130,7 @@ export const ParagraphRenderer: React.FC<ParagraphRendererProps> = ({
 const createParagraphStyles = (theme: any) => StyleSheet.create({
   paragraphContainer: {
     flexDirection: 'column',
-    marginBottom: 16, 
+    marginBottom: 16,
   },
   annotationContainer: {
     width: 32,
