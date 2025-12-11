@@ -27,8 +27,9 @@ export const SegmentRenderer: React.FC<SegmentRendererProps> = ({
     
     if (segment.underline) {
       textStyles.push({
-        textDecorationLine: 'underline',
-        textDecorationStyle: 'solid',
+        borderBottomWidth: 1,
+        borderBottomColor: theme.colors.text,
+        paddingBottom: 2, // 이 값으로 간격 조정
       });
     }
 
@@ -113,8 +114,8 @@ export const ParagraphRenderer: React.FC<ParagraphRendererProps> = ({
 
 const createParagraphStyles = (theme: any) => StyleSheet.create({
   paragraphContainer: {
-    flexDirection: 'row',
-    marginBottom: 16,
+    flexDirection: 'column',
+    marginBottom: 16, 
   },
   annotationContainer: {
     width: 32,

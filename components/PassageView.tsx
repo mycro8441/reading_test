@@ -13,16 +13,6 @@ export const PassageView: React.FC<PassageViewProps> = ({ passage, theme }) => {
 
   return (
     <View style={styles.container}>
-      {/* 제목 */}
-      {passage.title && (
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>{passage.title}</Text>
-          {passage.author && (
-            <Text style={styles.author}>{passage.author}</Text>
-          )}
-        </View>
-      )}
-
       {/* 본문 */}
       <View style={styles.bodyContainer}>
         {passage.paragraphs.map((paragraph) => (
@@ -37,10 +27,18 @@ export const PassageView: React.FC<PassageViewProps> = ({ passage, theme }) => {
         ))}
       </View>
 
+      {/* 제목과 저자 (하단 우측) */}
+      {(passage.title || passage.author) && (
+        <View style={styles.metaContainer}>
+          {passage.title && <Text style={styles.metaTitle}>- {passage.title}</Text>}
+          {passage.author && <Text style={styles.metaAuthor}>{passage.author}</Text>}
+        </View>
+      )}
+
       {/* 출처 */}
       {passage.source && (
         <View style={styles.sourceContainer}>
-          <Text style={styles.sourceText}>- {passage.source} -</Text>
+          <Text style={styles.sourceText}>* {passage.source}</Text>
         </View>
       )}
 
@@ -61,31 +59,10 @@ export const PassageView: React.FC<PassageViewProps> = ({ passage, theme }) => {
 
 const createStyles = (theme: any) => StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 10,
     backgroundColor: theme.colors.surface,
     borderRadius: 24,
     ...theme.shadows.medium,
-  },
-  titleContainer: {
-    alignItems: 'center',
-    marginBottom: 24,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: theme.colors.text,
-    fontFamily: theme.fonts?.title || 'System',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  author: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: theme.colors.textSecondary,
-    fontFamily: theme.fonts?.subText || 'System',
   },
   bodyContainer: {
     marginBottom: 16,
@@ -96,45 +73,63 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.text,
     fontWeight: '400',
     fontFamily: theme.fonts?.body || 'System',
-
+  },
+  metaContainer: {
+    alignItems: 'flex-end',
+    marginTop: 8,
+    marginBottom: 16,
+    paddingTop: 12,
+  },
+  metaTitle: {
+    fontSize: 13,
+    color: theme.colors.textSecondary,
+    fontFamily: theme.fonts?.body || 'System',
+    fontWeight: '400',
+    marginBottom: 2,
+  },
+  metaAuthor: {
+    fontSize: 12,
+    color: theme.colors.textTertiary,
+    fontFamily: theme.fonts?.subText || 'System',
+    fontWeight: '400',
   },
   sourceContainer: {
-    alignItems: 'center',
     marginTop: 16,
-    paddingTop: 16,
+    paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
   },
   sourceText: {
-    fontSize: 13,
-    color: theme.colors.textSecondary,
+    fontSize: 11,
+    color: theme.colors.textTertiary,
     fontFamily: theme.fonts?.subText || 'System',
-    fontStyle: 'italic',
+    fontWeight: '400',
   },
   footnotesContainer: {
-    marginTop: 20,
-    paddingTop: 16,
+    marginTop: 16,
+    paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
   },
   footnoteItem: {
     flexDirection: 'row',
     marginBottom: 8,
-    paddingLeft: 8,
+    paddingLeft: 4,
   },
   footnoteKey: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: theme.colors.primary,
+    fontSize: 11,
+    fontWeight: '500',
+    color: theme.colors.textSecondary,
     fontFamily: theme.fonts?.number || 'System',
-    marginRight: 8,
-    minWidth: 20,
+    marginRight: 6,
+    minWidth: 16,
   },
   footnoteValue: {
     flex: 1,
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 11,
+    lineHeight: 16,
     color: theme.colors.textSecondary,
     fontFamily: theme.fonts?.body || 'System',
+    fontWeight: '400',
   },
 });

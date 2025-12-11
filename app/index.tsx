@@ -36,8 +36,7 @@ export default function HomeScreen() {
       description: '역대 수능 기출문제',
       icon: '📝',
       color: '#f093fb',
-      route: '/korea/past-exams',
-      badge: '준비중',
+      route: '/past-exams',
     },
     {
       id: 'vocabulary',
