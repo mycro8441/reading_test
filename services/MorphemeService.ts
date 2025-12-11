@@ -4,101 +4,116 @@ export interface Morpheme {
     tag: string;     // 품사 태그
     start: number;   // 시작 위치
     end: number;     // 끝 위치
-  }
-  
-  export interface MorphemeAnalysis {
+}
+
+export interface MorphemeAnalysis {
     word: string;           // 원본 어절
     morphemes: Morpheme[];  // 형태소 분석 결과
-  }
-  
-  // Flask 서버 URL (개발 환경에 따라 변경)
-  const KIWI_SERVER_URL = __DEV__ 
+}
+
+// Kiwi WASM 타입 정의
+interface KiwiMorph {
+    form: string;
+    tag: string;
+    start: number;
+    len: number;
+}
+
+interface KiwiToken {
+    str: string;
+    morphs: KiwiMorph[];
+}
+
+// Flask 응답 타입 정의
+interface FlaskToken {
+    form: string;
+    tag: string;
+    start: number;
+    len: number;
+}
+
+interface FlaskResponse {
+    tokens: FlaskToken[];
+}
+
+// Flask 서버 URL (개발 환경에 따라 변경)
+const KIWI_SERVER_URL = __DEV__ 
     ? 'http://localhost:5000'  // 개발 모드
-    : 'http://YOUR_SERVER_IP:5000';  // 프로덕션
-  
-  /**
-   * 형태소 분석 (단일 문장)
-   */
-  export async function analyzeMorpheme(text: string): Promise<MorphemeAnalysis[]> {
+    : 'https://api.namaetrans.xyz';  // 프로덕션
+
+/**
+ * 형태소 분석 (Flask 서버 사용)
+ */
+export async function analyzeMorpheme(text: string): Promise<MorphemeAnalysis[]> {
     try {
-      const response = await fetch(`${KIWI_SERVER_URL}/analyze`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
-      });
-  
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || `서버 오류: ${response.status}`);
-      }
-  
-      const data = await response.json();
-      return data.words || [];
+        const response = await fetch(`${KIWI_SERVER_URL}/analyze`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data: FlaskResponse = await response.json();
+        
+        // Flask 응답을 MorphemeAnalysis 형식으로 변환
+        return transformFlaskResponse(text, data.tokens);
     } catch (error) {
-      console.error('형태소 분석 오류:', error);
-      
-      // 서버 연결 실패 시 안내 메시지
-      if (error instanceof TypeError && error.message.includes('Network request failed')) {
-        throw new Error(
-          'Kiwi 서버에 연결할 수 없습니다.\n\n' +
-          '서버를 실행하세요:\n' +
-          '1. pip install kiwipiepy flask flask-cors\n' +
-          '2. python kiwi_server.py'
-        );
-      }
-      
-      throw error;
+        console.error('형태소 분석 오류:', error);
+        throw error;
     }
-  }
-  
-  /**
-   * 일괄 형태소 분석 (여러 문장)
-   */
-  export async function analyzeMorphemeBatch(texts: string[]): Promise<Array<{
-    text: string;
-    words: MorphemeAnalysis[];
-  }>> {
+}
+
+/**
+ * Flask 응답을 MorphemeAnalysis 배열로 변환
+ */
+function transformFlaskResponse(
+    originalText: string, 
+    tokens: FlaskToken[]
+): MorphemeAnalysis[] {
+    // 공백으로 어절 분리
+    const words = originalText.split(/\s+/);
+    const result: MorphemeAnalysis[] = [];
+    
+    let currentWordStart = 0;
+    
+    for (const word of words) {
+        const wordEnd = currentWordStart + word.length;
+        
+        // 현재 어절에 속하는 형태소들 찾기
+        const wordMorphemes = tokens
+            .filter(token => token.start >= currentWordStart && token.start < wordEnd)
+            .map(token => ({
+                surface: token.form,
+                tag: token.tag,
+                start: token.start,
+                end: token.start + token.len,
+            }));
+        
+        if (wordMorphemes.length > 0) {
+            result.push({
+                word: word,
+                morphemes: wordMorphemes,
+            });
+        }
+        
+        // 다음 어절 시작 위치 (공백 포함)
+        currentWordStart = wordEnd + 1;
+    }
+    
+    return result;
+}
+
+
+export async function analyzeMorphemeWithFallback(text: string) {
     try {
-      const response = await fetch(`${KIWI_SERVER_URL}/batch-analyze`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ texts }),
-      });
-  
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || `서버 오류: ${response.status}`);
-      }
-  
-      const data = await response.json();
-      return data.results || [];
+        return await analyzeMorpheme(text);
     } catch (error) {
-      console.error('일괄 분석 오류:', error);
-      throw error;
+        console.warn('서버 분석 실패', error);
+       
     }
-  }
-  
-  /**
-   * 서버 상태 확인
-   */
-  export async function checkServerHealth(): Promise<boolean> {
-    try {
-      const response = await fetch(`${KIWI_SERVER_URL}/health`, {
-        method: 'GET',
-      });
-  
-      if (!response.ok) {
-        return false;
-      }
-  
-      const data = await response.json();
-      return data.status === 'healthy';
-    } catch (error) {
-      console.error('서버 상태 확인 실패:', error);
-      return false;
-    }
-  }
+}
