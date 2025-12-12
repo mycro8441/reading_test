@@ -55,6 +55,7 @@ export default function GlobalExamsScreen() {
         title="글로벌 시험 준비"
         subtitle="AI 기반 학습 플랫폼"
         theme={theme}
+        showBack
       />
 
       <ScrollView

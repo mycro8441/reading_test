@@ -53,7 +53,7 @@ export default function LearningScreen() {
       console.log('🎯 Generating problems with params:', generationParams);
 
       // Google AI로 문제 생성
-      const rawData =new AIGenerationService().generateProblems(generationParams);
+      const rawData =await new AIGenerationService().generateProblems(generationParams);
       
 
       // 데이터 변환

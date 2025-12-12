@@ -44,8 +44,7 @@ export default function HomeScreen() {
       description: '한자성어, 속담, 관용구',
       icon: '📚',
       color: '#4facfe',
-      route: '/korea/vocabulary',
-      badge: '준비중',
+      route: '/vocabulary',
     },
     {
       id: 'morpheme',
@@ -82,15 +81,12 @@ export default function HomeScreen() {
               <TouchableOpacity
                 key={feature.id}
                 style={[
-                  styles.featureCard,
-                  feature.badge && styles.featureCardDisabled,
+                  styles.featureCard
                 ]}
                 onPress={() => {
-                  if (feature.badge) {
-                    alert('준비 중입니다!');
-                  } else {
+               
                     router.push(feature.route as any);
-                  }
+                  
                 }}
                 activeOpacity={0.7}
               >
@@ -104,17 +100,7 @@ export default function HomeScreen() {
                   </View>
                 </View>
 
-                {feature.badge && (
-                  <View style={styles.featureBadge}>
-                    <Text style={styles.featureBadgeText}>{feature.badge}</Text>
-                  </View>
-                )}
-
-                {!feature.badge && (
-                  <View style={styles.featureArrow}>
-                    <Text style={styles.arrowIcon}>→</Text>
-                  </View>
-                )}
+   
               </TouchableOpacity>
             ))}
           </View>

@@ -37,9 +37,7 @@ interface FlaskResponse {
 }
 
 // Flask 서버 URL (개발 환경에 따라 변경)
-const KIWI_SERVER_URL = __DEV__ 
-    ? 'http://localhost:5000'  // 개발 모드
-    : 'https://api.namaetrans.xyz';  // 프로덕션
+const KIWI_SERVER_URL = "https://morph-server.vercel.app"
 
 /**
  * 형태소 분석 (Flask 서버 사용)
@@ -53,7 +51,7 @@ export async function analyzeMorpheme(text: string): Promise<MorphemeAnalysis[]>
             },
             body: JSON.stringify({ text }),
         });
-
+        console.log(response)
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

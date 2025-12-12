@@ -1,14 +1,15 @@
+import { UnifiedHeader } from '@/components/UnifiedHeader';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { CATEGORY_LABELS, PAST_EXAMS } from '../constants/pastExams';
 import { useTheme } from '../contexts/ThemeContext';
@@ -103,20 +104,12 @@ export default function PastExamDetailScreen() {
       <StatusBar barStyle={theme.statusBar} />
 
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.backIcon}>←</Text>
-        </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{exam.year}학년도</Text>
-          <Text style={styles.headerSubtitle}>{exam.title}</Text>
-        </View>
-        <View style={styles.headerSpacer} />
-      </View>
+              <UnifiedHeader
+                    title={`${exam.year}학년도`}
+                    subtitle={exam.title}
+                    showBack 
+                    theme={theme}        />
+
 
       <ScrollView
         style={styles.scrollView}
@@ -385,6 +378,8 @@ const createStyles = (theme: any) =>
       color: theme.colors.textTertiary,
       textTransform: 'uppercase',
       letterSpacing: 1.2,
+      paddingHorizontal: 24,  // 이 줄 추가
+      marginBottom: 16,       // 이 줄 추가
     },
     selectAllText: {
       fontSize: 14,
