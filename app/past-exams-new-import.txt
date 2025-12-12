@@ -1,0 +1,26 @@
+// 기존 import 아래에 추가할 내용:
+
+// ✨ 새로운 데이터 구조
+import {
+  ALL_PASSAGES,     // 5개 지문
+  ALL_PROBLEMS,     // 17개 문제  
+  getAllYears,
+  getAllCategories,
+  PassageInfo,
+  ProblemInfo,
+} from '../data/past-exams';
+
+// 사용 예시:
+console.log('총 지문:', ALL_PASSAGES.length);  // 5
+console.log('총 문제:', ALL_PROBLEMS.length);  // 17
+
+// 지문 클릭 핸들러 예시:
+const handlePassagePress = (passage: PassageInfo) => {
+  router.push({
+    pathname: '/learning',
+    params: {
+      topic: passage.title,
+      sessionData: JSON.stringify(passage.session),
+    },
+  });
+};
